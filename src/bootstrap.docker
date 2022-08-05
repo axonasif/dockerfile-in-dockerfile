@@ -1,0 +1,3 @@
+ARG base
+FROM ${base}
+ENTRYPOINT ["/debug.sh"]

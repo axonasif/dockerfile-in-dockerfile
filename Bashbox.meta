@@ -1,0 +1,29 @@
+NAME="Docker Quick Prototyping"
+CODENAME="docker-quick-proto"
+AUTHORS=("AXON <axonasif@gmail.com>")
+VERSION="1.0"
+DEPENDENCIES=(
+	std::0.2.0
+)
+REPOSITORY=""
+BASHBOX_COMPAT="0.3.9~"
+
+bashbox::run::before() {
+	local arg base_image run_args;
+	for arg in "${_run_target_args[@]}"; do {
+		if test "${arg%%=}" == base; then {
+			base_image="${arg#base=}";
+		} fi
+	} done
+	if test ! -v base_image; then {
+		base_image="gitpod/workspace-base";
+	} fi
+	run_args="${_run_target_args[@]}";
+	run_args+=("base=$base_image");
+
+	docker build --build-arg base="$base_image" -t "$CODENAME" -f bootstrap.docker "$_arg_path/src";
+	if test ! -v NO_RUN; then {
+		docker run -v "$_target_workfile":/debug.sh -it "$CODENAME" "${run_args[@]}";
+	} fi
+	exit;
+}
